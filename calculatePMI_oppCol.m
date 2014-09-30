@@ -2,19 +2,32 @@
 addpath(genpath(pwd));
 % I = imread('test_images/253027.jpg'); % zebra
 % I = imread('test_images/syntheticImage.png'); % synthetic image
+% I = imread('test_images/synthetic3.png');
 % I = imread('test_images/tp09-96_20480_10240_2048_2048.tif'); % H&E
 datadir = 'T:\HE_Tissue-Image(Luong)\TissueImages';
-if ~exist('datadir','dir')
+if ~ exist(datadir,'dir')
     datadir = '/Users/lun5/Research/color_deconvolution/TissueImages/';
 end
-I = imread(fullfile(datadir,'tp10-867-1_47104_22528_2048_2048.tif'));
+I = imread(fullfile(datadir,'tp10-867-1_4096_20480_2048_2048.tif'));
+% I = imread(fullfile(datadir,'tp10-867-1_47104_22528_2048_2048.tif'));
 % I = imread(fullfile(datadir,'tp10-867-1_26624_24576_2048_2048.tif'));
 % I = imread(fullfile(datadir,'tp10-867-1_34816_18432_2048_2048.tif'));
 % I = imread(fullfile(datadir,'tp10-611_22528_16384_2048_2048.tif'));
 imshow(I);
 % rect = getrect;
-I = imcrop(I,rect);
+% I_purple = imcrop(I,round(rect));
+% rect = getrect;
+% I_pink = imcrop(I,round(rect));
+% addpath('../color-deconvolution/');
+% training_data = cat(2, raw2rgb(I_purple), raw2rgb(I_pink));
+% [U,~,~] = svd(training_data + normrnd(0,1),0);
+% rotation_matrix = [-U(:,1) U(:,2:3)]';
 opts = setEnvironment('speedy');
+
+% rect = getrect;
+rect = [440         746        1178         489];
+I = imcrop(I,round(rect));
+imshow(I);
 I = im2uint8(I);
 if (size(I,3)==1)
     I = repmat(I,[1 1 3]);
@@ -22,50 +35,27 @@ end
 
 num_scales = opts.num_scales;
 scale_offset = opts.scale_offset;
-opts.features.which_features = {'hue_opp'};
-% options are 'hue_opp', 'saturation_opp','brightness_opp','hsb_opp';
+opts.features.which_features = {'hue opp'};
+%options are 'hue opp', 'saturation opp','brightness opp','hsb opp';
 getRotMat; % calculate the rotation matrix 
 opts.features.rotation_matrix = rotation_matrix;
 f_maps = getFeatures_oppCol(double(I),num_scales+scale_offset,opts.features.which_features{1},opts);
-%getFeatures_theta;
+
+opts.sig = 5;
+% opts.features.which_features = {'luminance'};
+% f_maps = getFeatures(double(I), num_scales+scale_offset,opts.features.which_features{1},opts);
 Nsamples = opts.kde.Nkernels;
-opt.sig = 5;
 F = sampleF(f_maps,Nsamples,opts);
 Fsym = [F; [F(:,2) F(:,1)]]; % symmetric F(A,B) = F(B,A). 
 p = kde(Fsym',0.05,[],'e');
-numFigures = 1;
-
-%% create the contour plots for P_AB
-% look up help kde/hist
-tol = opts.kde.kdtree_tol;
-thetaRange = pi;
-x = -thetaRange:0.1:thetaRange; y = -thetaRange:0.1:thetaRange;
-
-[X,Y] = meshgrid(x,y);
-Fim = [X(:),Y(:)];
-pd = evaluate(p,Fim',tol);
-pd_mesh =  reshape(pd, size(X));
-%[pd,x,y] = hist(p,500,[1,2]);
-% 
-% figure(numFigures);mesh(x,y,pd_mesh); axis square; colorbar;
-% xlabel('Luminance A'); ylabel('Luminance B');
-% set(gca,'XTick',0:0.1:1)
-% set(gca,'YTick',0:0.1:1)
-% numFigures = numFigures+1;
-
-% figure(numFigures);contourf(x,y,pd_mesh,30); axis square; colorbar;
-% xlabel('Luminance A'); ylabel('Luminance B');
-% set(gca,'XTick',0:0.1:1);set(gca,'YTick',0:0.1:1)
-% numFigures = numFigures+1;
-
 %% Interactive selection of red, green, blue circles on the zebra
-figure(numFigures); imshow(I); hold on;
-numFigures = numFigures+1;
+figure; imshow(I); hold on;
+
 [rowSub,colSub] = ginput;
 rowSub = round(rowSub); colSub = round(colSub); 
 c_vecs = {'r','r','g','g','w','w'};
 % shape inserter for 6 combinations: 
-% pink-pink: red circle, purple purple: white circle, white white: green
+% pink-pink: white circle, purple purple: green circle, white white: red
 % circle, pink purple: white square, pink white: red square, purle-white:
 % green square
 
@@ -86,26 +76,49 @@ end
 
 hold off;
 
+%% create the contour plots for P_AB
+% look up help kde/hist
+tol = opts.kde.kdtree_tol;
+dataRange = max(f_maps(:)) - min(f_maps(:)); 
+x = min(f_maps(:)):dataRange/500:max(f_maps(:)); 
+y = x;
+
+[X,Y] = meshgrid(x,y);
+Fim = [X(:),Y(:)];
+pd = evaluate(p,Fim',tol);
+pd_mesh =  reshape(pd, size(X));
+%[pd,x,y] = hist(p,500,[1,2]);
+% 
+% figure;mesh(x,y,pd_mesh); axis square; colorbar;
+% xlabel('Luminance A'); ylabel('Luminance B');
+% set(gca,'XTick',0:0.1:1)
+% set(gca,'YTick',0:0.1:1)
+% 
+
+% figure;contourf(x,y,pd_mesh,30); axis square; colorbar;
+% xlabel('Luminance A'); ylabel('Luminance B');
+% set(gca,'XTick',0:0.1:1);set(gca,'YTick',0:0.1:1)
+% 
 %% 
 %linearInd = sub2ind(size(f_maps{1}), rowSub, colSub);
 % if later not work, add {1} behind f_maps
 linearInd = sub2ind(size(f_maps), colSub, rowSub);
 feats = f_maps(linearInd);
-
+colormap(jet);
 %% joint probabilities
 reg = opts.p_reg;
 pJoint = reg + pd;
 % in a mesh
 pJoint_mesh = reshape(pJoint, size(X));
-% figure(numFigures);mesh(x,y,log(pJoint_mesh)); axis square; colorbar;
+% figure;mesh(x,y,log(pJoint_mesh)); axis square; colorbar;
 % xlabel('Luminance A'); ylabel('Luminance B');
-% numFigures = numFigures+1;
+% 
 
-figure(numFigures);contourf(x,y,log(pJoint_mesh),30); axis square; colorbar;
+figure;contourf(x,y,log(pJoint_mesh),30); axis square; colorbar;
 %xlabel('Luminance A'); ylabel('Luminance B');
-xlabel('Theta A'); ylabel('Theta B');
+xlabel(opts.features.which_features); ylabel(opts.features.which_features);
 %set(gca,'XTick',x);set(gca,'YTick',y)
-numFigures = numFigures+1;
+
 hold on;
 for i =1:floor(length(feats)/2)
     coord = [feats(2*(i-1)+1) feats(2*i)]; % coordinate of points picked interactively
@@ -133,20 +146,20 @@ pMarg_y = evaluate(p2,Y(:)',tol);
 pProd = pMarg_x.*pMarg_y +reg;
 
 %% calculate pmi
-rf = learnPMIPredictor(f_maps,p,opts);
-pmi = fastRFreg_predict(Fim,rf);
+% rf = learnPMIPredictor(f_maps,p,opts);
+% pmi = fastRFreg_predict(Fim,rf);
 pmi = log((pJoint.^(opts.joint_exponent))./pProd);
 Z_pmi = reshape(pmi,size(X));
 % 
-% figure(numFigures);mesh(x,y,Z_pmi);axis square; colorbar;
+% figure;mesh(x,y,Z_pmi);axis square; colorbar;
 % xlabel('Luminance A'); ylabel('Luminance B');
-% numFigures = numFigures+1;
 % 
-figure(numFigures);[C_pmi,h_pmi]=contourf(x,y,Z_pmi,20);
+% 
+figure;[C_pmi,h_pmi]=contourf(x,y,Z_pmi,20);
 axis square; colorbar; 
-xlabel('Theta A'); ylabel('Theta B');
+xlabel(opts.features.which_features); ylabel(opts.features.which_features);
 %set(gca,'XTick',x);set(gca,'YTick',y)
-numFigures = numFigures+1;
+
 hold on;
 for i =1:floor(length(feats)/2)
     coord = [feats(2*(i-1)+1) feats(2*i)]; % coordinate of points picked interactively
@@ -162,7 +175,6 @@ for i =1:floor(length(feats)/2)
 end
 hold off; 
 
-close all;
 %%
 rf = learnPMIPredictor(f_maps,p,opts);
 pmi = fastRFreg_predict(Fim,rf);

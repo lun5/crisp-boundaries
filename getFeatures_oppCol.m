@@ -35,19 +35,19 @@ function [f_maps] = getFeatures_oppCol(im_rgb,scale,which_feature,opts)
     figure; imagesc(im_brightness); axis equal; axis([0 size(im_brightness,2) 0 size(im_brightness,1)]);
     colormap(jet); colorbar; 
     
-    if strcmp(which_feature,'hue_opp')
+    if strcmp(which_feature,'hue opp')
         im = im_theta;
     end
     %%
-    if (strcmp(which_feature,'saturation_opp'))       
+    if (strcmp(which_feature,'saturation opp'))       
         im = im_sat; 
     end
     %%
-    if (strcmp(which_feature,'brightness_opp'))
+    if (strcmp(which_feature,'brightness opp'))
         im = im_brightness;
     end
     %% 
-    if (strcmp(which_feature,'all_oppCol'))
+    if (strcmp(which_feature,'hsb oppCol'))
         im = cat(3,im_theta, im_sat, imbrightness);
     end
         
