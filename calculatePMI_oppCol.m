@@ -4,11 +4,14 @@ addpath(genpath(pwd));
 % I = imread('test_images/syntheticImage.png'); % synthetic image
 % I = imread('test_images/tp09-96_20480_10240_2048_2048.tif'); % H&E
 datadir = 'T:\HE_Tissue-Image(Luong)\TissueImages';
+if ~exist('datadir','dir')
+    datadir = '/Users/lun5/Research/color_deconvolution/TissueImages/';
+end
 I = imread(fullfile(datadir,'tp10-867-1_47104_22528_2048_2048.tif'));
 % I = imread(fullfile(datadir,'tp10-867-1_26624_24576_2048_2048.tif'));
 % I = imread(fullfile(datadir,'tp10-867-1_34816_18432_2048_2048.tif'));
 % I = imread(fullfile(datadir,'tp10-611_22528_16384_2048_2048.tif'));
-% imshow(I);
+imshow(I);
 % rect = getrect;
 I = imcrop(I,rect);
 opts = setEnvironment('speedy');
@@ -19,8 +22,8 @@ end
 
 num_scales = opts.num_scales;
 scale_offset = opts.scale_offset;
-opts.features.which_features = {'saturation_opp'};
-% other options are 'saturation_opp','brightness_opp','hsb_opp';
+opts.features.which_features = {'hue_opp'};
+% options are 'hue_opp', 'saturation_opp','brightness_opp','hsb_opp';
 getRotMat; % calculate the rotation matrix 
 opts.features.rotation_matrix = rotation_matrix;
 f_maps = getFeatures_oppCol(double(I),num_scales+scale_offset,opts.features.which_features{1},opts);
@@ -60,7 +63,7 @@ figure(numFigures); imshow(I); hold on;
 numFigures = numFigures+1;
 [rowSub,colSub] = ginput;
 rowSub = round(rowSub); colSub = round(colSub); 
-c_vecs = {'r','r','g','g','b','b'};
+c_vecs = {'r','r','g','g','w','w'};
 % shape inserter for 6 combinations: 
 % pink-pink: red circle, purple purple: white circle, white white: green
 % circle, pink purple: white square, pink white: red square, purle-white:
@@ -130,8 +133,9 @@ pMarg_y = evaluate(p2,Y(:)',tol);
 pProd = pMarg_x.*pMarg_y +reg;
 
 %% calculate pmi
+rf = learnPMIPredictor(f_maps,p,opts);
+pmi = fastRFreg_predict(Fim,rf);
 pmi = log((pJoint.^(opts.joint_exponent))./pProd);
-log_pmi = log(pmi);
 Z_pmi = reshape(pmi,size(X));
 % 
 % figure(numFigures);mesh(x,y,Z_pmi);axis square; colorbar;
@@ -159,4 +163,6 @@ end
 hold off; 
 
 close all;
-
+%%
+rf = learnPMIPredictor(f_maps,p,opts);
+pmi = fastRFreg_predict(Fim,rf);
