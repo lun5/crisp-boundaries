@@ -20,14 +20,19 @@ datadir = 'T:\HE_Tissue-Image(Luong)\TissueImages';
 if ~ exist(datadir,'dir')
     datadir = '/Users/lun5/Research/color_deconvolution/TissueImages/';
 end
-I = imread(fullfile(datadir,'tp10-867-1_4096_20480_2048_2048.tif'));
-rect = [440         746        1178         489];
+
+% I = imread(fullfile(datadir,'tp10-867-1_4096_20480_2048_2048.tif'));
+% rect = [440         746        1178         489];
+% I = imcrop(I,round(rect));
+I = imread(fullfile(datadir,'tp10-867-1_47104_22528_2048_2048.tif'));
+% imshow(I);
+% rect = getrect;
+rect = [911        1324         207         129];
 I = imcrop(I,round(rect));
 
 [E,E_oriented] = findBoundaries_oppCol(I);
 
-figure; subplot(211); imshow(I); subplot(212); imshow(1-mat2gray(E));
-
+figure; subplot(121); imshow(I); subplot(122); imshow(1-mat2gray(E));
 
 %% Segment image
 % builds an Ultrametric Contour Map from the detected boundaries (E_oriented)

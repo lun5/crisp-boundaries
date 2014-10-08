@@ -9,7 +9,7 @@
 
 %% setup
 % first cd to the directory containing this file, then run:
-compile; % this will check to make sure everything is compiled properly; if it is not, will try to compile it
+% compile; % this will check to make sure everything is compiled properly; if it is not, will try to compile it
 
 
 %% Detect boundaries
@@ -19,12 +19,14 @@ compile; % this will check to make sure everything is compiled properly; if it i
 %type = 'super_speedy'; % use this for fastest results
 type = 'speedy'; % use this for slightly slower but crisper results
 %type = 'accurate'; % use this for slow, but high quality results
-
-I = imread('test_images/101027.jpg');
+%I = imread('test_images/101027.jpg');
+I = imread('test_images/253027.jpg'); % zebra
+% datadir = 'C:\Users\luong_nguyen\Dropbox\DDIresearch\crisp-boundaries\breastColony';
+% I = imread(fullfile(datadir, 'LLV232 D04 10x max proj.tif'));
+% I = imadjust(I);
 [E,E_oriented] = findBoundaries(I,type);
 
 close all; subplot(121); imshow(I); subplot(122); imshow(1-mat2gray(E));
-
 
 %% Segment image
 % builds an Ultrametric Contour Map from the detected boundaries (E_oriented)

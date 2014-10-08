@@ -18,7 +18,7 @@
 % Phillip Isola, 2014 [phillpi@mit.edu]
 % Please email me if you find bugs, or have suggestions or questions
 % -------------------------------------------------------------------------
-
+% Luong Nguyen 10/06/14: change line 32, add rad,rad_inner
 function [W] = buildW_pmi(f_maps,rf,p,opts,samples)
     
     if (~exist('samples','var'))
@@ -29,7 +29,7 @@ function [W] = buildW_pmi(f_maps,rf,p,opts,samples)
     
     %% get local pixel pairs
     if (isempty(samples) || size(samples,2)==1)
-        [ii,jj] = getLocalPairs(im_size,[],[],samples);
+        [ii,jj] = getLocalPairs(im_size,opts.localPairs.rad,opts.localPairs.rad_inner,samples);
     else
         ii = samples(:,1);
         jj = samples(:,2);

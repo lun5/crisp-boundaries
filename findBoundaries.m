@@ -25,6 +25,9 @@ function [E,E_oriented,Ws] = findBoundaries(I,type)
     else
         opts = setEnvironment(type);
     end
+    %% Luong Nguyen 10/06/14 add opts.localPairs.rad,opts.localPairs.rad_inner
+    opts.localPairs.rad = 5;
+    opts.localPairs.rad_inner= [];
     
     I = im2uint8(I);
     if (size(I,3)==1)

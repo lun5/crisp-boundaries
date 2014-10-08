@@ -14,7 +14,7 @@
 % Phillip Isola, 2014 [phillpi@mit.edu]
 % Please email me if you find bugs, or have suggestions or questions
 % -------------------------------------------------------------------------
-
+% Luong Nguyen 10/06/14: change line 32, add rad,rad_inner
 function [rf] = learnPMIPredictor(f_maps,p,opts)
     
     %%
@@ -22,7 +22,7 @@ function [rf] = learnPMIPredictor(f_maps,p,opts)
     im_size = size(f_maps(:,:,1));
     
     %% get all local pairs
-    [ii,jj] = getLocalPairs(im_size,[],[],Nsamples);
+    [ii,jj] = getLocalPairs(im_size,opts.localPairs.rad,opts.localPairs.rad_inner,Nsamples);
     
     %% extract features
     [F,F_unary] = extractF(f_maps,ii,jj);

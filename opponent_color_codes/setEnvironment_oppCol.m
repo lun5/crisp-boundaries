@@ -77,3 +77,8 @@
     opts.approximate_PMI = true;
     opts.num_scales = 1;
     opts.spectral_clustering.approximate = true;
+    
+    %% Luong Nguyen 10/06/14 add opts.localPairs.rad,opts.localPairs.rad_inner
+    opts.localPairs.rad = 15;
+    opts.localPairs.rad_inner= 0;
+    
