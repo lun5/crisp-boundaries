@@ -20,7 +20,8 @@
 type = 'speedy'; % use this for slightly slower but crisper results
 %type = 'accurate'; % use this for slow, but high quality results
 %I = imread('test_images/101027.jpg');
-I = imread('test_images/253027.jpg'); % zebra
+%I = imread('test_images/253027.jpg'); % zebra
+I = imread('test_images/134067.jpg'); % leopard
 % datadir = 'C:\Users\luong_nguyen\Dropbox\DDIresearch\crisp-boundaries\breastColony';
 % I = imread(fullfile(datadir, 'LLV232 D04 10x max proj.tif'));
 % I = imadjust(I);
