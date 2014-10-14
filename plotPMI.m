@@ -32,7 +32,7 @@ f_maps = getFeatures(double(I)/255,num_scales+scale_offset,opts.features.which_f
 %getFeatures_theta;
 Nsamples = opts.kde.Nkernels;
 %opt.sig = 20;
-F = sampleF(f_maps,Nsamples,opts);
+F = sampleF(f_maps{1},Nsamples,opts);
 Fsym = [F; [F(:,2) F(:,1)]]; % symmetric F(A,B) = F(B,A). 
 p = kde(Fsym',0.05,[],'e');
 
@@ -56,7 +56,7 @@ pd_mesh =  reshape(pd, size(X));
 % 
 
 figure;contourf(x,y,pd_mesh,30); axis square; colorbar;
-%xlabel('Luminance A'); ylabel('Luminance B');
+xlabel('Luminance A'); ylabel('Luminance B');
 set(gca,'XTick',0:0.1:1);set(gca,'YTick',0:0.1:1)
 
 
@@ -66,7 +66,7 @@ figure; imshow(I); hold on;
 % [rowSub,colSub] = ginput;
 % rowSub = round(rowSub); colSub = round(colSub); 
 % c_vecs = {'r','r','g','g','w','w'};
-c_vecs = {'b','g','r'};
+c_vecs = {'r','g','b'};
 % shape inserter for 6 combinations: 
 % pink-pink: red circle, purple purple: white circle, white white: green
 % circle, pink purple: white square, pink white: red square, purle-white:
@@ -92,7 +92,7 @@ hold off;
 %% 
 %linearInd = sub2ind(size(f_maps{1}), rowSub, colSub);
 % if later not work, add {1} behind f_maps
-f_maps_cur = f_maps(:,:,1);
+f_maps_cur = f_maps{1};
 linearInd = sub2ind(size(f_maps_cur), colSub, rowSub);
 feats = f_maps_cur(linearInd);
 
