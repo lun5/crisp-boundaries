@@ -26,8 +26,8 @@
     
     %% features                                                 used in getFeatures.m:
     %opts.features.which_features = {'color','var'};             % which features to use?
-    %opts.features.which_features = {'hue opp'}; 
-    opts.features.which_features = {'hsb oppCol'};
+    opts.features.which_features = {'hue opp'}; 
+    %opts.features.which_features = {'hsb oppCol'};
     opts.features.decorrelate = 1;                              % decorrelate feature channels (done separately for each feature type in which_features)?
     
     opts.features.rotation_matrix = rotation_matrix;
@@ -74,11 +74,11 @@
     
     opts.kde.Nkernels = 5000;
     opts.kde.learn_bw = false;
-    opts.approximate_PMI = true;
+    opts.approximate_PMI = false;
     opts.num_scales = 1;
     opts.spectral_clustering.approximate = true;
     
     %% Luong Nguyen 10/06/14 add opts.localPairs.rad,opts.localPairs.rad_inner
-    opts.localPairs.rad = 15;
+    opts.localPairs.rad = 10;
     opts.localPairs.rad_inner= 0;
     
