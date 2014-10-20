@@ -22,16 +22,13 @@ type = 'speedy'; % use this for slightly slower but crisper results
 %I = imread('test_images/101027.jpg');
 %I = imread('test_images/253027.jpg'); % zebra
 I = imread('test_images/134067.jpg'); % leopard
-datadir = 'T:\HE_Tissue-Image(Luong)\TissueImages';
-if ~ exist(datadir,'dir')
-    datadir = '/Users/lun5/Research/color_deconvolution/TissueImages/';
-end
-I = imread(fullfile(datadir,'tp10-867-1_47104_22528_2048_2048.tif'));
-rect = [911        1324         207         129];
-I = imcrop(I,round(rect));
-% datadir = 'C:\Users\luong_nguyen\Dropbox\DDIresearch\crisp-boundaries\breastColony';
-% I = imread(fullfile(datadir, 'LLV232 D04 10x max proj.tif'));
-% I = imadjust(I);
+% datadir = 'T:\HE_Tissue-Image(Luong)\TissueImages';
+% if ~ exist(datadir,'dir')
+%     datadir = '/Users/lun5/Research/color_deconvolution/TissueImages/';
+% end
+% I = imread(fullfile(datadir,'tp10-867-1_47104_22528_2048_2048.tif'));
+% rect = [911        1324         207         129];
+% I = imcrop(I,round(rect));
 
 [E,E_oriented] = findBoundaries(I,type);
 close all; subplot(121); imshow(I); subplot(122); imshow(1-mat2gray(E));

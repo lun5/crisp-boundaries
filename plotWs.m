@@ -3,7 +3,17 @@ coords = [195,102;120,223;168,257];
 imshow(I);
 [rowSub,colSub] = ginput;
 coords = round([rowSub,colSub]);
-% dist = 3;
+
+
+%% Find the coordinates of the centers, every 2rad + 1 away 
+rad = opts.localPairs.rad;
+dist = 2; %rad
+rowSub = rad+dist:(2*rad+dist):size(I,1);
+colSub = rad+dist:(2*rad+dist):size(I,2);
+[XX, YY] = meshgrid(rowSub,colSub);
+coords = [YY(:),XX(:)];
+
+% dist = 3; % get coordinates on the PMI and PAB planes
 % for i = 1:length(coords)
 %     rowSub(2*i-1) = coords(i,1) - dist;
 %     rowSub(2*i) = coords(i,1) + dist;
@@ -12,14 +22,8 @@ coords = round([rowSub,colSub]);
 % end
     
 Ws_current = Ws{1};
-% black_green = [31,162];
-% white_green = [44,133];
-% green_green = [20,120];
-% black_white = [72,152];
-% coords = [black_green;white_green;green_green;black_white];
 
-figure; imshow(I); hold on;
-%coords = ginput;coords = round(coords);
+figure; imshow(I./2); hold on;
 plot(coords(:,1), coords(:,2),'wx','MarkerSize',10);
 ind_coords = sub2ind([size(I,2),size(I,1)],coords(:,1),coords(:,2));
 hold off;
@@ -32,8 +36,8 @@ u = uicontrol('Style','slider','Position',[10 50 20 340],...
 for i = 1:size(coords,1)
     im = reshape(Ws_spots(i,:),size(I,2), size(I,1));
     %figure;
-    h = histogram(nonzeros(im),'DisplayStyle','stairs' );
-    %h.FaceColor = [0.8 .8 .8]; h.BinWidth= max(nonzeros(Ws_spots))/50;
+    h = histogram(nonzeros(im),'DisplayStyle','bar' );
+    h.FaceColor = [0.8 .8 .8]; h.BinWidth= max(nonzeros(Ws_spots))/500;
     h.Normalization = 'probability'; 
     ax = axis;axis([min(nonzeros(Ws_spots)) max(nonzeros(Ws_spots)) 0 1]);
     u.Value = i;
@@ -53,4 +57,4 @@ figure;
 h = histogram(aff_im(aff_im > 0),'DisplayStyle','bar' );
 h.FaceColor = [0.8 .8 .8];h.NumBins = 20;
 h.Normalization = 'probability'; ax = axis;
-axis([0 max(nonzeros(Ws_spots)) 0 1]);
+axis([min(nonzeros(Ws_spots)) max(nonzeros(Ws_spots)) 0 1]);
