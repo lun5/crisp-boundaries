@@ -7,11 +7,11 @@ coords = round([rowSub,colSub]);
 
 %% Find the coordinates of the centers, every 2rad + 1 away 
 rad = opts.localPairs.rad;
-dist = 2; %rad
+dist = rad/4; %rad
 rowSub = rad+dist:(2*rad+dist):size(I,1);
 colSub = rad+dist:(2*rad+dist):size(I,2);
 [XX, YY] = meshgrid(rowSub,colSub);
-coords = [YY(:),XX(:)];
+coords = round([YY(:),XX(:)]);
 
 % dist = 3; % get coordinates on the PMI and PAB planes
 % for i = 1:length(coords)
@@ -28,7 +28,7 @@ plot(coords(:,1), coords(:,2),'wx','MarkerSize',10);
 ind_coords = sub2ind([size(I,2),size(I,1)],coords(:,1),coords(:,2));
 hold off;
 
-Ws_spots = Ws_current(ind_coords,:)*100;
+Ws_spots = Ws_current(ind_coords,:);
 aff_im = zeros(size(I(:,:,1)));
 figure
 u = uicontrol('Style','slider','Position',[10 50 20 340],...
@@ -49,12 +49,12 @@ end
 % movie2avi(M,fullfile(pwd,'results','pink_pink.avi'), 'compression', 'None','fps',3);
 
 figure; imshow(I); hold on; 
-cspy(aff_im,'markersize',15, 'colormap', 'jet', 'levels', 7); 
+cspy(aff_im,'markersize',5, 'colormap', 'jet', 'levels', 7); 
 colorbar; 
 hold off;
 
 figure;
 h = histogram(aff_im(aff_im > 0),'DisplayStyle','bar' );
-h.FaceColor = [0.8 .8 .8];h.NumBins = 20;
+h.FaceColor = [0.8 .8 .8];h.BinWidth = max(nonzeros(Ws_spots))/500;
 h.Normalization = 'probability'; ax = axis;
 axis([min(nonzeros(Ws_spots)) max(nonzeros(Ws_spots)) 0 1]);
