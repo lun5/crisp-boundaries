@@ -17,7 +17,7 @@
 
 
     %% scales                                                   used throughout code:
-    opts.num_scales = 3;                                        % how many image scales to measure affinity over
+    opts.num_scales = 1;                                        % how many image scales to measure affinity over
                                                                 %  each subsequent scale is half the size of the one before (in both dimensions)
                                                                 %  if opts.num_scales>1, then the method of Maire & Yu 2013 is used for globalization (going from affinty to boundaries);
                                                                 %  otherwise regular spectral clustering is used
@@ -26,7 +26,7 @@
     
     %% features                                                 used in getFeatures.m:
     %opts.features.which_features = {'color','var'};             % which features to use?
-    opts.features.which_features = {'hue opp','saturation opp'}; 
+    opts.features.which_features = {'hue opp', 'brightness opp', 'saturation opp'}; 
     %opts.features.which_features = {'hsb oppCol'};
     opts.features.decorrelate = 1;                              % decorrelate feature channels (done separately for each feature type in which_features)?
     
@@ -53,14 +53,14 @@
     
                                                             
     %% approximate PMI with a random forest?                    used in learnPMIpredictor:                                
-    opts.approximate_PMI = true;                                % approximate W with a random forest?
+    opts.approximate_PMI = false;                                % approximate W with a random forest?
     opts.PMI_predictor.Nsamples_learning_PMI_predictor = 10000; % how many samples to learn approximation from
     opts.PMI_predictor.Ntrees = 4;                              % how many trees in the random forest
     
     
     %% globalization (from affinity to boundaries)              used in getE:
     opts.globalization_method = 'spectral_clustering';          % how to go from affinty to boundaries? (spectral clustering is only method currently supported)
-    opts.spectral_clustering.approximate = false;               % use the DNcuts approximation from Arbelaez et al. CVPR 2014? (was not included in our published paper)
+    opts.spectral_clustering.approximate = true;               % use the DNcuts approximation from Arbelaez et al. CVPR 2014? (was not included in our published paper)
     opts.spectral_clustering.nvec = 100;                        % how many eigenvectors to use
     
     % post-processing
@@ -71,12 +71,6 @@
     
     %% other options
     opts.display_progress = true;                           % set to false if you want to suppress all progress printouts
-    
-    opts.kde.Nkernels = 5000;
-    opts.kde.learn_bw = false;
-    opts.approximate_PMI = false;
-    opts.num_scales = 1;
-    opts.spectral_clustering.approximate = true;
     
     %% Luong Nguyen 10/06/14 add opts.localPairs.rad,opts.localPairs.rad_inner
     opts.localPairs.rad = 10;

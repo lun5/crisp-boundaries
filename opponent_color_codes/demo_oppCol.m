@@ -22,13 +22,14 @@ if ~ exist(datadir,'dir')
 end
 
 % I = imread(fullfile(datadir,'tp10-867-1_4096_20480_2048_2048.tif'));
-% rect = [440         746        1178         489];
+% rect = [809   851   408   360];
 % I = imcrop(I,round(rect));
+
 I = imread(fullfile(datadir,'tp10-867-1_47104_22528_2048_2048.tif'));
-% imshow(I);
-% rect = getrect;
-rect = [911        1324         207         129];
+rect = [911 1324 207 129];
 I = imcrop(I,round(rect));
+% imshow(I);
+% rect = getrect; rect = round(rect);
 
 [E,E_oriented] = findBoundaries_oppCol(I);
 
