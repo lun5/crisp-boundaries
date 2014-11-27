@@ -11,8 +11,10 @@ addpath(genpath(pwd));
 % imshow(I);
 % rect = getrect;
 % I = imcrop(I,rect);
-I = imread('/Users/lun5/Research/github/HE-tumor-object-segmentation/test_images/gland3.tif');
-opts = setEnvironment('speedy');
+I = imread(fullfile(pwd,'test_images','gland1.tif'));
+%opts = setEnvironment('speedy');
+getRotMat; % calculate the rotation matrix 
+setEnvironment_oppCol;
 
 % datadir = 'T:\HE_Tissue-Image(Luong)\TissueImages';
 % if ~ exist(datadir,'dir')
@@ -29,7 +31,8 @@ end
 
 num_scales = opts.num_scales;
 scale_offset = opts.scale_offset;
-f_maps = getFeatures(double(I)/255,num_scales+scale_offset,opts.features.which_features,opts);
+%f_maps = getFeatures(double(I)/255,num_scales+scale_offset,opts.features.which_features,opts);
+f_maps = getFeatures_oppCol(double(I)/255,num_scales+scale_offset,opts.features.which_features,opts);
 %getFeatures_theta;
 Nsamples = opts.kde.Nkernels;
 %opt.sig = 20;
@@ -40,9 +43,9 @@ p = kde(Fsym',0.05,[],'e');
 %% create the contour plots for P_AB
 % look up help kde/hist
 tol = opts.kde.kdtree_tol;
-x = 0:0.01:1;y = 0:0.01:1;
-% thetaRange = pi;
-% x = -thetaRange:0.01:thetaRange;y = -thetaRange:0.01:thetaRange;
+%x = 0:0.01:1;y = 0:0.01:1;
+thetaRange = pi;
+x = -thetaRange:0.01:thetaRange;y = -thetaRange:0.01:thetaRange;
 
 [X,Y] = meshgrid(x,y);
 Fim = [X(:),Y(:)];
@@ -58,7 +61,8 @@ pd_mesh =  reshape(pd, size(X));
 
 figure;contourf(x,y,pd_mesh,30); axis square; colorbar;
 xlabel('Luminance A'); ylabel('Luminance B');
-set(gca,'XTick',0:0.5:1);set(gca,'YTick',0:0.5:1)
+% set(gca,'XTick',0:0.5:1);set(gca,'YTick',0:0.5:1)
+%set(gca,'XTick',-pi:pi/2:pi,'YTick',-pi:pi:pi);
 set(gca,'FontSize',30);
 
 %% Interactive selection of red, green, blue circles on the zebra
@@ -76,7 +80,7 @@ c_vecs = {'r','g','b'};
 for i =1:floor(length(colSub)/2)
     coord1 = [rowSub(2*(i-1)+1),colSub(2*(i-1)+1)];
     coord2 = [rowSub(2*i),colSub(2*i)];
-    r_shape = 20; % radius of the shape drawn
+    r_shape = 10; % radius of the shape drawn
     plot([coord1(1),coord2(1)],[coord1(2),coord2(2)],'o','MarkerSize',6,...
         'MarkerEdgeColor',c_vecs{i},'MarkerFaceColor',c_vecs{i});
 %     if mod(i,2) == 1
@@ -108,16 +112,16 @@ pJoint_mesh = reshape(pJoint, size(X));
 % 
 
 figure;contourf(x,y,log(pJoint_mesh),30); axis square; colorbar;
-xlabel('Luminance A'); ylabel('Luminance B');axis([0 1 0 1]);
-axis square; colorbar;axis equal;axis tight; axis([0 1 0 1])
-%xlabel('Theta A'); ylabel('Theta B');
-set(gca,'XTick',0:0.2:1);set(gca,'YTick',0:0.2:1)
+%xlabel('Luminance A'); ylabel('Luminance B');%axis([0 1 0 1]);
+axis equal;axis tight; 
+xlabel('Theta A'); ylabel('Theta B');
+%set(gca,'XTick',0:0.2:1);set(gca,'YTick',0:0.2:1)
 set(gca,'FontSize',30);
 
 hold on;
 for i =1:floor(length(feats)/2)
     coord = [feats(2*(i-1)+1) feats(2*i)]; % coordinate of points picked interactively
-    r_shape = 0.03;
+    r_shape = 0.3;
     plot(coord(1),coord(2),'o','MarkerSize',4,...
         'MarkerEdgeColor',c_vecs{i},'MarkerFaceColor',c_vecs{i});
 %     if mod(i,2) == 1
@@ -153,16 +157,16 @@ Z_pmi = reshape(pmi,size(X));
 % 
 % 
 figure;[C_pmi,h_pmi]=contourf(x,y,Z_pmi,20);
-axis square; colorbar;axis equal;axis tight; axis([0 1 0 1])
-xlabel('Luminance A'); ylabel('Luminance B');
-% xlabel('Theta A'); ylabel('Theta B');
-set(gca,'XTick',0:0.2:1);set(gca,'YTick',0:0.2:1)
+axis square; colorbar;axis equal;axis tight; % axis([0 1 0 1])
+%xlabel('Luminance A'); ylabel('Luminance B');
+xlabel('Theta A'); ylabel('Theta B');
+%set(gca,'XTick',0:0.2:1);set(gca,'YTick',0:0.2:1)
 set(gca,'FontSize',30);
 
 hold on;
 for i =1:floor(length(feats)/2)
     coord = [feats(2*(i-1)+1) feats(2*i)]; % coordinate of points picked interactively
-    r_shape = 0.03;
+    r_shape = 0.3;
     plot(coord(1),coord(2),'o','MarkerSize',4,...
         'MarkerEdgeColor',c_vecs{i},'MarkerFaceColor',c_vecs{i});
 %     if mod(i,2) == 1
@@ -174,5 +178,5 @@ for i =1:floor(length(feats)/2)
 end
 hold off; 
 
-%close all;
+close all;
 

@@ -26,20 +26,20 @@
     
     %% features                                                 used in getFeatures.m:
     %opts.features.which_features = {'color','var'};             % which features to use?
-    opts.features.which_features = {'hue opp', 'brightness opp', 'saturation opp'}; 
+    opts.features.which_features = {'hue opp'};%, 'brightness opp', 'saturation opp'}; 
     %opts.features.which_features = {'hsb oppCol'};
-    opts.features.decorrelate = 1;                              % decorrelate feature channels (done separately for each feature type in which_features)?
+    %opts.features.decorrelate = 1;                              % decorrelate feature channels (done separately for each feature type in which_features)?
     
     opts.features.rotation_matrix = rotation_matrix;
     %% model and learning for PMI_{\rho}(A,B)                   used in learnP_A_B.m and buildW_pmi.m:
     opts.model_type = 'kde';                                    % what type of density estimate? (kde refers to kernel density estimation, which is the only method currently supported)
-    opts.joint_exponent = 1.25;                                 % exponent \rho for PMI_{\rho} (Eqn. 2 in the paper)
-    opts.p_reg = 100;                                           % regularization added to numerator and demoninator of PMI calculation
+    opts.joint_exponent = 2;%1.25;                                 % exponent \rho for PMI_{\rho} (Eqn. 2 in the paper)
+    opts.p_reg = 10; %0;                                           % regularization added to numerator and demoninator of PMI calculation
     
     % kde options
     opts.kde.Nkernels = 10000;                                  % how many kernels for kde
     opts.kde.kdtree_tol = 0.001;                                % controls how exact is the kde evaluation (kde uses a kdtree to speed it up)
-    opts.kde.learn_bw = true;                                   % adapt the bandwidth of the kde kernels to each test image?
+    opts.kde.learn_bw = false;                                   % adapt the bandwidth of the kde kernels to each test image?
     opts.kde.min_bw = 0.01; opts.kde.max_bw = 0.1;              % min and max bandwidths allowed when adapating bandwidth to test image
     
     % options for Eqn. 1 in paper
@@ -53,7 +53,7 @@
     
                                                             
     %% approximate PMI with a random forest?                    used in learnPMIpredictor:                                
-    opts.approximate_PMI = false;                                % approximate W with a random forest?
+    opts.approximate_PMI = true;                                % approximate W with a random forest?
     opts.PMI_predictor.Nsamples_learning_PMI_predictor = 10000; % how many samples to learn approximation from
     opts.PMI_predictor.Ntrees = 4;                              % how many trees in the random forest
     
