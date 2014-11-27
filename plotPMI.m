@@ -11,15 +11,16 @@ addpath(genpath(pwd));
 % imshow(I);
 % rect = getrect;
 % I = imcrop(I,rect);
+I = imread('/Users/lun5/Research/github/HE-tumor-object-segmentation/test_images/gland3.tif');
 opts = setEnvironment('speedy');
 
-datadir = 'T:\HE_Tissue-Image(Luong)\TissueImages';
-if ~ exist(datadir,'dir')
-    datadir = '/Users/lun5/Research/color_deconvolution/TissueImages/';
-end
-I = imread(fullfile(datadir,'tp10-867-1_4096_20480_2048_2048.tif'));
-rect = [440         746        1178         489];
-I = imcrop(I,round(rect));
+% datadir = 'T:\HE_Tissue-Image(Luong)\TissueImages';
+% if ~ exist(datadir,'dir')
+%     datadir = '/Users/lun5/Research/color_deconvolution/TissueImages/';
+% end
+% I = imread(fullfile(datadir,'tp10-867-1_4096_20480_2048_2048.tif'));
+% rect = [440         746        1178         489];
+% I = imcrop(I,round(rect));
 
 I = im2uint8(I);
 if (size(I,3)==1)
@@ -32,7 +33,7 @@ f_maps = getFeatures(double(I)/255,num_scales+scale_offset,opts.features.which_f
 %getFeatures_theta;
 Nsamples = opts.kde.Nkernels;
 %opt.sig = 20;
-F = sampleF(f_maps{1},Nsamples,opts);
+F = sampleF(f_maps,Nsamples,opts);
 Fsym = [F; [F(:,2) F(:,1)]]; % symmetric F(A,B) = F(B,A). 
 p = kde(Fsym',0.05,[],'e');
 
@@ -57,14 +58,14 @@ pd_mesh =  reshape(pd, size(X));
 
 figure;contourf(x,y,pd_mesh,30); axis square; colorbar;
 xlabel('Luminance A'); ylabel('Luminance B');
-set(gca,'XTick',0:0.1:1);set(gca,'YTick',0:0.1:1)
-
+set(gca,'XTick',0:0.5:1);set(gca,'YTick',0:0.5:1)
+set(gca,'FontSize',30);
 
 %% Interactive selection of red, green, blue circles on the zebra
 figure; imshow(I); hold on;
 
-% [rowSub,colSub] = ginput;
-% rowSub = round(rowSub); colSub = round(colSub); 
+[rowSub,colSub] = ginput;
+rowSub = round(rowSub); colSub = round(colSub); 
 % c_vecs = {'r','r','g','g','w','w'};
 c_vecs = {'r','g','b'};
 % shape inserter for 6 combinations: 
@@ -75,15 +76,15 @@ c_vecs = {'r','g','b'};
 for i =1:floor(length(colSub)/2)
     coord1 = [rowSub(2*(i-1)+1),colSub(2*(i-1)+1)];
     coord2 = [rowSub(2*i),colSub(2*i)];
-    r_shape = 10; % radius of the shape drawn
-    plot([coord1(1),coord2(1)],[coord1(2),coord2(2)],'o','MarkerSize',4,...
+    r_shape = 20; % radius of the shape drawn
+    plot([coord1(1),coord2(1)],[coord1(2),coord2(2)],'o','MarkerSize',6,...
         'MarkerEdgeColor',c_vecs{i},'MarkerFaceColor',c_vecs{i});
 %     if mod(i,2) == 1
-%         viscircles((coord1 + coord2)/2,r_shape, 'EdgeColor',c_vecs{i},'DrawBackgroundCircle',false);
+        viscircles((coord1 + coord2)/2,r_shape, 'EdgeColor',c_vecs{i},'DrawBackgroundCircle',false);
 %     else       
-        rectangle('Position',[(coord1(1) + coord2(1))/2 - r_shape ...
-            (coord1(2) + coord2(2))/2 - r_shape 2*r_shape 2*r_shape],...,
-            'LineWidth', 2, 'EdgeColor',c_vecs{i})
+%         rectangle('Position',[(coord1(1) + coord2(1))/2 - r_shape ...
+%             (coord1(2) + coord2(2))/2 - r_shape 2*r_shape 2*r_shape],...,
+%             'LineWidth', 2, 'EdgeColor',c_vecs{i})
 %     end
 end
 
@@ -92,7 +93,7 @@ hold off;
 %% 
 %linearInd = sub2ind(size(f_maps{1}), rowSub, colSub);
 % if later not work, add {1} behind f_maps
-f_maps_cur = f_maps{1};
+f_maps_cur = f_maps;
 linearInd = sub2ind(size(f_maps_cur), colSub, rowSub);
 feats = f_maps_cur(linearInd);
 
@@ -107,9 +108,11 @@ pJoint_mesh = reshape(pJoint, size(X));
 % 
 
 figure;contourf(x,y,log(pJoint_mesh),30); axis square; colorbar;
-% xlabel('Luminance A'); ylabel('Luminance B');
+xlabel('Luminance A'); ylabel('Luminance B');axis([0 1 0 1]);
+axis square; colorbar;axis equal;axis tight; axis([0 1 0 1])
 %xlabel('Theta A'); ylabel('Theta B');
-set(gca,'XTick',0:0.1:1);set(gca,'YTick',0:0.1:1)
+set(gca,'XTick',0:0.2:1);set(gca,'YTick',0:0.2:1)
+set(gca,'FontSize',30);
 
 hold on;
 for i =1:floor(length(feats)/2)
@@ -118,10 +121,10 @@ for i =1:floor(length(feats)/2)
     plot(coord(1),coord(2),'o','MarkerSize',4,...
         'MarkerEdgeColor',c_vecs{i},'MarkerFaceColor',c_vecs{i});
 %     if mod(i,2) == 1
-%         viscircles(coord,r_shape, 'EdgeColor',c_vecs{i},'DrawBackgroundCircle',false);
+        viscircles(coord,r_shape, 'EdgeColor',c_vecs{i},'DrawBackgroundCircle',false);
 %     else 
-        rectangle('Position', [ coord(1) - r_shape coord(2) - r_shape ...
-            2*r_shape 2*r_shape], 'LineWidth', 2, 'EdgeColor',c_vecs{i});
+%         rectangle('Position', [ coord(1) - r_shape coord(2) - r_shape ...
+%             2*r_shape 2*r_shape], 'LineWidth', 2, 'EdgeColor',c_vecs{i});
 %     end
 end
 hold off;
@@ -150,10 +153,11 @@ Z_pmi = reshape(pmi,size(X));
 % 
 % 
 figure;[C_pmi,h_pmi]=contourf(x,y,Z_pmi,20);
-axis square; colorbar; 
-% xlabel('Luminance A'); ylabel('Luminance B');
+axis square; colorbar;axis equal;axis tight; axis([0 1 0 1])
+xlabel('Luminance A'); ylabel('Luminance B');
 % xlabel('Theta A'); ylabel('Theta B');
-set(gca,'XTick',0:0.1:1);set(gca,'YTick',0:0.1:1)
+set(gca,'XTick',0:0.2:1);set(gca,'YTick',0:0.2:1)
+set(gca,'FontSize',30);
 
 hold on;
 for i =1:floor(length(feats)/2)
@@ -162,13 +166,13 @@ for i =1:floor(length(feats)/2)
     plot(coord(1),coord(2),'o','MarkerSize',4,...
         'MarkerEdgeColor',c_vecs{i},'MarkerFaceColor',c_vecs{i});
 %     if mod(i,2) == 1
-%         viscircles(coord,r_shape, 'EdgeColor',c_vecs{i},'DrawBackgroundCircle',false);
+        viscircles(coord,r_shape, 'EdgeColor',c_vecs{i},'DrawBackgroundCircle',false);
 %     else 
-        rectangle('Position', [ coord(1) - r_shape coord(2) - r_shape ...
-            2*r_shape 2*r_shape], 'LineWidth', 2, 'EdgeColor',c_vecs{i});
+%         rectangle('Position', [ coord(1) - r_shape coord(2) - r_shape ...
+%             2*r_shape 2*r_shape], 'LineWidth', 2, 'EdgeColor',c_vecs{i});
 %     end
 end
 hold off; 
 
-close all;
+%close all;
 

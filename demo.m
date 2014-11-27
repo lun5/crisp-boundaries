@@ -20,8 +20,8 @@
 type = 'speedy'; % use this for slightly slower but crisper results
 %type = 'accurate'; % use this for slow, but high quality results
 %I = imread('test_images/101027.jpg');
-%I = imread('test_images/253027.jpg'); % zebra
-I = imread('test_images/134067.jpg'); % leopard
+I = imread('test_images/253027.jpg'); % zebra
+% I = imread('test_images/134067.jpg'); % leopard
 % datadir = 'T:\HE_Tissue-Image(Luong)\TissueImages';
 % if ~ exist(datadir,'dir')
 %     datadir = '/Users/lun5/Research/color_deconvolution/TissueImages/';

@@ -26,9 +26,9 @@ function [opts] = setEnvironment(type)
     
     
     %% features                                                 used in getFeatures.m:
-    opts.features.which_features = {'color','var'};             % which features to use?
+    %opts.features.which_features = {'color','var'};             % which features to use?
     %opts.features.which_features = {'color'};
-    %opts.features.which_features = {'luminance'}; 
+    opts.features.which_features = {'luminance'}; 
     opts.features.decorrelate = 1;                              % decorrelate feature channels (done separately for each feature type in which_features)?
     
     

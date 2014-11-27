@@ -21,8 +21,9 @@ if ~ exist(datadir,'dir')
     datadir = '/Users/lun5/Research/color_deconvolution/TissueImages/';
 end
 
-% I = imread(fullfile(datadir,'tp10-867-1_4096_20480_2048_2048.tif'));
+I = imread(fullfile(datadir,'tp10-867-1_4096_20480_2048_2048.tif'));
 % rect = [809   851   408   360];
+% rect = [581         759        1032         427];
 % I = imcrop(I,round(rect));
 
 I = imread(fullfile(datadir,'tp10-867-1_47104_22528_2048_2048.tif'));
